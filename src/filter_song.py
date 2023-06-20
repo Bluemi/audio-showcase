@@ -8,7 +8,7 @@ from utils import load_mono_audio, play_audio, set_area, plot
 
 def test_fft():
     # you probably have to change this path to some song that is located on your machine.
-    path_to_song = Path('../../audio/Song.wav')
+    path_to_song = Path('audio/Song.wav')
     if len(sys.argv) >= 2:
         # you can also define the audio with a command line argument
         path_to_song = sys.argv[1]
@@ -50,7 +50,7 @@ def test_fft():
 
 def test_filter():
     # Get file path and load mono audio data
-    path_to_song = Path('Song.wav')
+    path_to_song = Path('audio/Song.wav')
     if len(sys.argv) >= 2:
         path_to_song = sys.argv[1]
     samples = load_mono_audio(path_to_song, length=5)  # load 5 seconds
