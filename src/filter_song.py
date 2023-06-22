@@ -56,14 +56,14 @@ def test_filter():
     samples = load_mono_audio(path_to_song, length=5)  # load 5 seconds
 
     # Play original
-    play_audio(samples)
+    # play_audio(samples)
 
     # Defines the number of samples in the filter. Changing the filter_width should change how the filter works.
     # An odd number of filter samples is recommended, so we have some central element
     filter_width = 21
 
     # You can choose between some different filters
-    filter_type = 'simple_blur'
+    filter_type = 'spectrum'
 
     if filter_type == 'simple_blur':
         # This creates an array containing <filter_width> samples each having the value 1.0 / <filter_width>
@@ -74,8 +74,8 @@ def test_filter():
     elif filter_type == 'gradient':
         # filter normally used for edge detection. This filter looks like this: [-1, ..., -1, 0, 1, ..., 1]
         audio_filter = np.zeros(filter_width)
-        audio_filter[:filter_width//2] = -1
-        audio_filter[filter_width//2+1:] = 1
+        audio_filter[:filter_width//2] = -1 / filter_width
+        audio_filter[filter_width//2+1:] = 1 / filter_width
     elif filter_type == 'DoG':
         # DoG stands for difference of gaussians. See https://www.desmos.com/calculator/za7pf8mx3k for more information.
         audio_filter = gaussian_filter(filter_width, sigma=0.25) - gaussian_filter(filter_width, sigma=0.3)
@@ -85,7 +85,7 @@ def test_filter():
         # audio_filter = np.array([-2, -5, -10, 34, -10, -5, -2])
         audio_filter = np.array([0, 0, 0, 1, 0, 0, 0])
     elif filter_type == 'spectrum':
-        filter_spectrum = np.linspace(1, 0, 21) ** 2
+        filter_spectrum = np.linspace(0, 1, 21) ** 2
         audio_filter = scipy.fft.idct(filter_spectrum)
     else:
         raise ValueError('Unknown filter type: {}'.format(filter_type))
@@ -99,12 +99,7 @@ def test_filter():
     play_audio(convolved_samples)
 
     # plot spectrum of filter
-    padded_audio_filter = np.concatenate([
-        np.zeros(len(audio_filter) // 2),
-        audio_filter,
-        np.zeros(len(audio_filter) // 2)
-    ])
-    filter_spectrum = np.fft.fft(padded_audio_filter)
+    filter_spectrum = np.fft.fft(audio_filter)
 
     # only use the first half of the spectrum as it is mirrored
     filter_spectrum = np.abs(filter_spectrum[:len(filter_spectrum)//2+1])
@@ -127,5 +122,5 @@ def gaussian_filter(filter_width, sigma=1.0, mean=0.0):
 
 if __name__ == '__main__':
     # print('uncomment one of the two functions at the very end of the code to start testing.')
-    test_fft()
-    # test_filter()
+    # test_fft()
+    test_filter()
