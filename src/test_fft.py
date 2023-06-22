@@ -34,14 +34,17 @@ def test_reverse_frequencies():
     spectrum[1] = 1.0
     spectrum[10] = 1.0
 
+    spectrum = np.linspace(0, 1, 21) ** 10
+    plot(spectrum, title='Test Spectrum')
+
     # Convert spectrum back to time domain and see what the spectrum looks like in time domain...
     samples = np.fft.ifft(spectrum)
 
     # ... by plotting it.
-    plot(samples.real)
+    plot(np.array([samples.real, samples.imag]).T, title='Samples (generiert von Spektrum)')
 
 
 if __name__ == '__main__':
-    print('uncomment one of the two functions at the very end of the code to start testing.')
+    # print('uncomment one of the two functions at the very end of the code to start testing.')
     # test_fft()
-    # test_reverse_frequencies()
+    test_reverse_frequencies()

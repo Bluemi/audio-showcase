@@ -68,7 +68,7 @@ def load_mono_audio(path: str or Path, length=3) -> np.ndarray:
     return data / np.max(data)
 
 
-def plot(y, x=None, zoom=None):
+def plot(y, x=None, zoom=None, title=None):
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
     if x is None:
@@ -83,10 +83,14 @@ def plot(y, x=None, zoom=None):
     # plot
     ax.plot(x, y)
 
+    # title
+    if title:
+        ax.set_title(title, fontdict={'fontsize': 32})
+
     # grid and spines
-    ax.spines.left.set_position('center')
+    ax.spines.left.set_position('zero')
     ax.spines.right.set_color('none')
-    ax.spines.bottom.set_position('center')
+    ax.spines.bottom.set_position('zero')
     ax.spines.top.set_color('none')
     ax.xaxis.set_ticks_position('bottom')
     ax.yaxis.set_ticks_position('left')

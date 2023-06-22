@@ -2,6 +2,7 @@ import sys
 from pathlib import Path
 
 import numpy as np
+import scipy
 
 from utils import load_mono_audio, play_audio, set_area, plot
 
@@ -17,7 +18,7 @@ def test_fft():
     samples = load_mono_audio(path_to_song, length=5)
 
     # Plot the sample data
-    plot(samples)
+    plot(samples, title='Samples')
 
     # Play original song
     play_audio(samples)
@@ -25,8 +26,7 @@ def test_fft():
     # Convert to frequency domain.
     # Note that frequencies with the fourier transformation are represented as complex numbers.
     spectrum = np.fft.fft(samples)
-
-    plot(spectrum)
+    plot(np.abs(spectrum), title='Spektrum')
 
     # We set 90 percent of the frequencies to zero (the second argument in "set_area()").
     # You can try the different modes "start", "end", "mid", "border".
@@ -39,13 +39,13 @@ def test_fft():
 
     # Plot the spectrum (we only plot the real part of the complex spectrum).
     # You can also try to plot the imaginary part with "freq.imag".
-    plot(spectrum.real)
+    plot(np.abs(spectrum), title='Spektrum (nach Bearbeitung)')
 
     # Convert frequencies back to sample data in time domain.
     new_samples = np.fft.ifft(spectrum)
 
     # Play the edited audio data.
-    play_audio(new_samples)
+    play_audio(new_samples.real)
 
 
 def test_filter():
@@ -68,7 +68,7 @@ def test_filter():
     if filter_type == 'simple_blur':
         # This creates an array containing <filter_width> samples each having the value 1.0 / <filter_width>
         audio_filter = np.ones(filter_width) / filter_width
-    elif filter_type == 'gaussian_blur':
+    elif filter_type == 'gaussian':
         # Creates a filter by sampling a gaussian curve between -1.0 and 1.0
         audio_filter = gaussian_filter(filter_width, sigma=0.3)
     elif filter_type == 'gradient':
@@ -76,19 +76,39 @@ def test_filter():
         audio_filter = np.zeros(filter_width)
         audio_filter[:filter_width//2] = -1
         audio_filter[filter_width//2+1:] = 1
-    elif filter_type == 'custom':
-        audio_filter = np.array([-2, -5, -10, 34, -10, -5, -2])
     elif filter_type == 'DoG':
         # DoG stands for difference of gaussians. See https://www.desmos.com/calculator/za7pf8mx3k for more information.
         audio_filter = gaussian_filter(filter_width, sigma=0.25) - gaussian_filter(filter_width, sigma=0.3)
+    elif filter_type == 'random':
+        audio_filter = np.random.normal(size=filter_width)
+    elif filter_type == 'custom':
+        # audio_filter = np.array([-2, -5, -10, 34, -10, -5, -2])
+        audio_filter = np.array([0, 0, 0, 1, 0, 0, 0])
+    elif filter_type == 'spectrum':
+        filter_spectrum = np.linspace(1, 0, 21) ** 2
+        audio_filter = scipy.fft.idct(filter_spectrum)
     else:
         raise ValueError('Unknown filter type: {}'.format(filter_type))
+
+    plot(audio_filter.real, title='Audio Filter')
 
     # apply filter to audio
     convolved_samples = np.convolve(samples, audio_filter)
 
     # see how the processed samples sound
     play_audio(convolved_samples)
+
+    # plot spectrum of filter
+    padded_audio_filter = np.concatenate([
+        np.zeros(len(audio_filter) // 2),
+        audio_filter,
+        np.zeros(len(audio_filter) // 2)
+    ])
+    filter_spectrum = np.fft.fft(padded_audio_filter)
+
+    # only use the first half of the spectrum as it is mirrored
+    filter_spectrum = np.abs(filter_spectrum[:len(filter_spectrum)//2+1])
+    plot(filter_spectrum.real, title='Filter Spektrum')
 
 
 def gauss_curve(x, sigma=1.0, mean=0.0):
