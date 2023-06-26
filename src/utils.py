@@ -80,6 +80,9 @@ def plot(y, x=None, zoom=None, title=None):
         x = x[:size]
         y = y[:size]
 
+    # handle complex numbers
+    if y.dtype == complex:
+        y = np.array([y.real, y.imag]).T
     # plot
     ax.plot(x, y)
 

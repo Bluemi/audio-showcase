@@ -9,7 +9,7 @@ from utils import load_mono_audio, play_audio, set_area, plot
 
 def test_fft():
     # you probably have to change this path to some song that is located on your machine.
-    path_to_song = Path('audio/Song.wav')
+    path_to_song = Path('audio/Song2.wav')
     if len(sys.argv) >= 2:
         # you can also define the audio with a command line argument
         path_to_song = sys.argv[1]
@@ -21,11 +21,12 @@ def test_fft():
     plot(samples, title='Samples')
 
     # Play original song
-    play_audio(samples)
+    # play_audio(samples)
 
     # Convert to frequency domain.
     # Note that frequencies with the fourier transformation are represented as complex numbers.
     spectrum = np.fft.fft(samples)
+    # plot(spectrum, title='Spektrum (vollständig)')
     plot(np.abs(spectrum), title='Spektrum')
 
     # We set 90 percent of the frequencies to zero (the second argument in "set_area()").
@@ -45,12 +46,12 @@ def test_fft():
     new_samples = np.fft.ifft(spectrum)
 
     # Play the edited audio data.
-    play_audio(new_samples.real)
+    # play_audio(new_samples.real)
 
 
 def test_filter():
     # Get file path and load mono audio data
-    path_to_song = Path('audio/Song.wav')
+    path_to_song = Path('audio/Song2.wav')
     if len(sys.argv) >= 2:
         path_to_song = sys.argv[1]
     samples = load_mono_audio(path_to_song, length=5)  # load 5 seconds
@@ -63,9 +64,9 @@ def test_filter():
     filter_width = 21
 
     # You can choose between some different filters
-    filter_type = 'spectrum'
+    filter_type = 'DoG'
 
-    if filter_type == 'simple_blur':
+    if filter_type == 'box_filter':
         # This creates an array containing <filter_width> samples each having the value 1.0 / <filter_width>
         audio_filter = np.ones(filter_width) / filter_width
     elif filter_type == 'gaussian':
@@ -83,20 +84,35 @@ def test_filter():
         audio_filter = np.random.normal(size=filter_width)
     elif filter_type == 'custom':
         # audio_filter = np.array([-2, -5, -10, 34, -10, -5, -2])
-        audio_filter = np.array([0, 0, 0, 1, 0, 0, 0])
+        audio_filter = np.array([1/5, 1/5, 1/10, 0, -1/10, -1/5, -1/5])
+        # audio_filter = np.zeros(filter_width)
+        # audio_filter[0] = 1 / filter_width
+        # audio_filter[-1] = -1 / filter_width
+        # audio_filter = np.ones(filter_width) / filter_width + audio_filter
+        # audio_filter = np.array([5, 1, 5, 1])
+        # audio_filter = np.array([0.1, 0.2, 0.3, 0.4, 0, 0, 0])
+        # audio_filter = np.zeros(44100)
+        # audio_filter[0] = 1
+        # audio_filter[22050] = 0.5
+        # audio_filter[-1] = 0.2
     elif filter_type == 'spectrum':
         filter_spectrum = np.linspace(0, 1, 21) ** 2
         audio_filter = scipy.fft.idct(filter_spectrum)
     else:
         raise ValueError('Unknown filter type: {}'.format(filter_type))
 
-    plot(audio_filter.real, title='Audio Filter')
+    # plot(audio_filter, title='Audio Filter')
 
     # apply filter to audio
     convolved_samples = np.convolve(samples, audio_filter)
 
     # see how the processed samples sound
     play_audio(convolved_samples)
+
+    # spectrum = np.fft.fft(samples)
+    # plot(np.abs(spectrum), title='Spektrum')
+    # convolved_spectrum = np.fft.fft(convolved_samples)
+    # plot(np.abs(convolved_spectrum), title='Gefiltertes Spektrum')
 
     # plot spectrum of filter
     filter_spectrum = np.fft.fft(audio_filter)
