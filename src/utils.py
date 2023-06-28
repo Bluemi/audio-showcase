@@ -49,9 +49,10 @@ def set_area(data, percentage, mode, value=0.0):
         raise ValueError('unknown mode: {}'.format(mode))
 
 
-def play_audio(song: np.ndarray, volume=1.0, sample_rate=DEFAULT_SAMPLE_RATE):
+def play_audio(song: np.ndarray, volume=1.0, sample_rate=DEFAULT_SAMPLE_RATE, normalize=True):
     song = song - np.mean(song)
-    song = song * (volume / np.max(np.abs(song)))
+    if normalize:
+        song = song * (volume / np.max(np.abs(song)))
     song = song.reshape((-1, 1))
     song = (song * 2**15).astype(np.int16)
     song = audiosegment.from_numpy_array(song, sample_rate)
@@ -99,3 +100,23 @@ def plot(y, x=None, zoom=None, title=None):
     ax.yaxis.set_ticks_position('left')
     ax.grid(True)
     plt.show()
+
+
+def seconds_to_samples(milliseconds, sample_rate=44100):
+    return int(sample_rate * milliseconds)
+
+
+def pad_to_length(samples, length):
+    diff = len(samples) - length
+    if diff < 0:
+        samples = np.concatenate([samples, np.zeros(-diff)])
+    elif diff > 0:
+        samples = samples[:length]
+    return samples
+
+
+def complement_half_spectrum(half_spectrum):
+    real_part = half_spectrum.real
+    imag_part = half_spectrum.imag
+    second_part = real_part[len(real_part)-2:0:-1] - imag_part[len(imag_part)-2:0:-1] * 1j
+    return np.concatenate([half_spectrum, second_part])

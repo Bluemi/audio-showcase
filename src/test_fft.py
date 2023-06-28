@@ -1,5 +1,6 @@
 import numpy as np
 
+from audio_effects import complement_half_spectrum
 from utils import plot
 
 
@@ -19,7 +20,13 @@ def test_fft():
 
     # Plot the frequencies. Note that we only plot the real part of the complex spectrum.
     # As you can the spectrum is symmetrically except for the very first sample.
-    plot(a_freq.real)
+    plot(a_freq)
+
+    # TODO
+    half_spectrum = a_freq[:len(a_freq)//2 + 1]
+    full_spectrum = complement_half_spectrum(half_spectrum)
+    plot(full_spectrum)
+    # TODO
 
     # We convert frequencies back to samples (frequency domain -> time domain).
     a_reversed = np.fft.ifft(a_freq)
@@ -46,5 +53,5 @@ def test_reverse_frequencies():
 
 if __name__ == '__main__':
     # print('uncomment one of the two functions at the very end of the code to start testing.')
-    # test_fft()
-    test_reverse_frequencies()
+    test_fft()
+    # test_reverse_frequencies()
