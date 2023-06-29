@@ -13,7 +13,11 @@ case "$1" in
 	b)
 		python src/basics.py
 		;;
+	r)
+		shift
+		python src/main.py "$@"
+		;;
 	*)
-		python src/main.py
+		echo "unknown option"
 		;;
 esac

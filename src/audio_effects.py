@@ -6,15 +6,17 @@ from utils import pad_to_length, complement_half_spectrum, load_mono_audio, seco
 REVERB_IMPULSE = None
 
 
-def reverb(samples, length=1, strength=1):
+def reverb(samples, length=1, dry_gain=1, wet_gain=1):
     global REVERB_IMPULSE
     if REVERB_IMPULSE is None:
         REVERB_IMPULSE = load_mono_audio('audio/BalloonPop.wav')
 
     reverb_impulse = stretch_audio(REVERB_IMPULSE, length)
-    new_samples = np.convolve(samples, reverb_impulse * strength)
+    new_samples = scipy.signal.fftconvolve(samples, reverb_impulse)
     new_samples = new_samples / np.max(new_samples)  # normalize as the signal now should be much louder
-    return new_samples
+
+    orig_samples = pad_to_length(samples, len(new_samples))
+    return dry_gain * orig_samples + wet_gain * new_samples
 
 
 def delay(samples, length=1, strength=0.5):
