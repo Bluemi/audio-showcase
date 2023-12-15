@@ -2,7 +2,7 @@
 
 Here are some scripts that can help understand discrete fourier transformations and filter
 for audio data.
-Be careful. Usually, calculation errors only hurt mentally. Here, they can also hurt physically.
+Be careful with very loud audio. Usually, calculation errors only hurt mentally. Here, they can also hurt physically.
 
 ## Getting started
 
