@@ -7,7 +7,8 @@ import scipy
 from utils import load_mono_audio, play_audio, set_area, plot
 
 
-PLOT_SPECTRUM = True
+PLOT_SPECTRUM = False
+PLOT_FILTER = False
 
 
 def test_fft():
@@ -67,7 +68,7 @@ def test_filter():
     filter_width = 121
 
     # You can choose between some different filters
-    filter_type = 'gaussian'
+    filter_type = 'identity'
 
     if filter_type == 'identity':
         audio_filter = np.zeros(filter_width)
@@ -96,7 +97,15 @@ def test_filter():
     else:
         raise ValueError('Unknown filter type: {}'.format(filter_type))
 
-    plot(audio_filter, title='Audio Filter')
+    if PLOT_FILTER:
+        plot(audio_filter, title='Audio Filter')
+
+        # plot spectrum of filter
+        filter_spectrum = np.fft.fft(audio_filter)
+
+        # only use the first half of the spectrum as it is mirrored
+        filter_spectrum = np.abs(filter_spectrum[:len(filter_spectrum)//2+1])
+        plot(np.abs(filter_spectrum), title='Filter Spektrum')
 
     # apply filter to audio
     convolved_samples = np.convolve(samples, audio_filter, mode='same')
@@ -113,12 +122,6 @@ def test_filter():
         ])
         plot(specs, zoom=4, title='Song Spektrum', legend=['Original', 'Gefiltert'])
 
-    # plot spectrum of filter
-    filter_spectrum = np.fft.fft(audio_filter)
-
-    # only use the first half of the spectrum as it is mirrored
-    filter_spectrum = np.abs(filter_spectrum[:len(filter_spectrum)//2+1])
-    plot(np.abs(filter_spectrum), title='Filter Spektrum')
 
 
 def gauss_curve(x, sigma=1.0, mean=0.0):
