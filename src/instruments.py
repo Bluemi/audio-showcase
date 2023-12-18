@@ -13,7 +13,7 @@ def test_instruments():
 
     # Use sine function to create a sine wave with the given frequency.
     # You can use different types of waves here.
-    wave_type = 'sawtooth'
+    wave_type = 'sin'
     if wave_type == 'sin':
         y = np.sin(x * 2 * np.pi * FREQUENCY)
     elif wave_type == 'sawtooth':
