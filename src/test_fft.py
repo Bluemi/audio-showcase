@@ -9,9 +9,9 @@ NUM_SAMPLES = 32
 
 def test_fft():
     # Create some random samples.
-    # a = np.random.random((NUM_SAMPLES,))
-    x = np.linspace(0, np.pi*2, NUM_SAMPLES)
-    a = np.sin(x * 4) + np.cos(x * 3)
+    a = np.random.random((NUM_SAMPLES,))
+    # x = np.linspace(0, np.pi*2, NUM_SAMPLES)
+    # a = np.sin(x * 4)
 
     # Plot the random data
     plot(a, title='Samples')

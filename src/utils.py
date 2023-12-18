@@ -117,8 +117,8 @@ def plot(y, x=None, zoom=None, title=None, legend=None, plot_style='line'):
         data_line, legend_kw = d
         if plot_style == 'line':
             ax.plot(x, data_line, **legend_kw)
-        elif plot_style == 'samples':
-            ax.stem(x, data_line, linefmt=colors[i % len(colors)], **legend_kw)
+        elif plot_style == 'stem':
+            ax.stem(x, data_line, linefmt=colors[i % len(colors)], markerfmt='.', **legend_kw)
 
     # title
     if title:
