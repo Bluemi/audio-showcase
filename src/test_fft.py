@@ -4,7 +4,7 @@ from audio_effects import complement_half_spectrum
 from utils import plot
 
 
-NUM_SAMPLES = 16
+NUM_SAMPLES = 32
 
 
 def test_fft():
@@ -12,7 +12,7 @@ def test_fft():
     a = np.random.random((NUM_SAMPLES,))
 
     # Plot the random data
-    plot(a)
+    plot(a, title='Samples')
 
     # Convert to frequency domain. If you want you could try the discrete cosine transformation np.fft.dct().
     # This produces only real numbers (not complex)
@@ -20,19 +20,19 @@ def test_fft():
 
     # Plot the frequencies. Note that we only plot the real part of the complex spectrum.
     # As you can the spectrum is symmetrically except for the very first sample.
-    plot(a_freq)
+    plot(a_freq, title='Spektrum', legend=['real part', 'imaginary part'])
 
     # TODO
     half_spectrum = a_freq[:len(a_freq)//2 + 1]
+    half_spectrum[0] = 0
     full_spectrum = complement_half_spectrum(half_spectrum)
-    plot(full_spectrum)
     # TODO
 
     # We convert frequencies back to samples (frequency domain -> time domain).
-    a_reversed = np.fft.ifft(a_freq)
+    a_reversed = np.fft.ifft(full_spectrum)
 
     # The real part of the reversed samples should look like original samples
-    plot(a_reversed.real)
+    plot(a + a_reversed.real * 1j, title='Samples', legend=['Original', 'From Spectrum'])
 
 
 def test_reverse_frequencies():

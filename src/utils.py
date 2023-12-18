@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from pathlib import Path
+from collections.abc import Sized
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -69,7 +70,17 @@ def load_mono_audio(path: str or Path, length=3) -> np.ndarray:
     return data / np.max(data)
 
 
-def plot(y, x=None, zoom=None, title=None):
+def plot(y, x=None, zoom=None, title=None, legend=None):
+    legend_kw_args1 = {}
+    legend_kw_args2 = {}
+    if legend is not None:
+        if isinstance(legend, str):
+            legend_kw_args1['label'] = legend
+        elif isinstance(legend, list) or isinstance(legend, tuple):
+            legend_kw_args1['label'] = legend[0]
+            if len(legend) >= 2:
+                legend_kw_args2['label'] = legend[1]
+
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
     if x is None:
@@ -83,13 +94,19 @@ def plot(y, x=None, zoom=None, title=None):
 
     # handle complex numbers
     if y.dtype == complex:
-        y = np.array([y.real, y.imag]).T
-    # plot
-    ax.plot(x, y)
+        ax.plot(x, y.real, **legend_kw_args1)
+        ax.plot(x, y.imag, **legend_kw_args2)
+    else:
+        # plot
+        ax.plot(x, y, **legend_kw_args1)
 
     # title
     if title:
         ax.set_title(title, fontdict={'fontsize': 32})
+
+    if legend:
+        ax.legend()
+        plt.legend()
 
     # grid and spines
     ax.spines.left.set_position('zero')
