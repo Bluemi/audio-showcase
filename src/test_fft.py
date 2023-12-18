@@ -9,7 +9,9 @@ NUM_SAMPLES = 32
 
 def test_fft():
     # Create some random samples.
-    a = np.random.random((NUM_SAMPLES,))
+    # a = np.random.random((NUM_SAMPLES,))
+    x = np.linspace(0, np.pi*2, NUM_SAMPLES)
+    a = np.sin(x * 4) + np.cos(x * 3)
 
     # Plot the random data
     plot(a, title='Samples')
@@ -24,7 +26,7 @@ def test_fft():
 
     # ------- Modify spectrum here -------
     half_spectrum = a_freq[:len(a_freq)//2 + 1]
-    half_spectrum[0] = 0
+    # half_spectrum[0] = 0
     full_spectrum = complement_half_spectrum(half_spectrum)
     # ------------------------------------
 

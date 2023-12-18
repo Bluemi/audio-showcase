@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 from pathlib import Path
-from collections.abc import Sized
-from typing import Iterable
 
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 import pydub
 from pydub.playback import play
 import audiosegment
@@ -75,7 +74,7 @@ def load_mono_audio(path: str or Path, length=3) -> np.ndarray:
     return data / np.max(data)
 
 
-def plot(y, x=None, zoom=None, title=None, legend=None):
+def plot(y, x=None, zoom=None, title=None, legend=None, plot_style='line'):
     if len(y.shape) == 1:
         y = y.reshape((1, -1))
     num_plots = len(y)
@@ -99,6 +98,8 @@ def plot(y, x=None, zoom=None, title=None, legend=None):
                 raise ValueError(f'got only {len(legend)} legend for {num_plots} plots.')
             for l in legend:
                 legend_kw_args.append({'label': l})
+        else:
+            raise TypeError('unknown type for legend')
 
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
@@ -111,8 +112,13 @@ def plot(y, x=None, zoom=None, title=None, legend=None):
         x = x[:size]
         y = y[:, :size]
 
-    for data_line, legend_kw in zip(y, legend_kw_args):
-        ax.plot(x, data_line, **legend_kw)
+    colors = list(mcolors.TABLEAU_COLORS.keys())
+    for i, d in enumerate(zip(y, legend_kw_args)):
+        data_line, legend_kw = d
+        if plot_style == 'line':
+            ax.plot(x, data_line, **legend_kw)
+        elif plot_style == 'samples':
+            ax.stem(x, data_line, linefmt=colors[i % len(colors)], **legend_kw)
 
     # title
     if title:
