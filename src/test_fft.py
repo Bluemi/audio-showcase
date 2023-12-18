@@ -22,11 +22,11 @@ def test_fft():
     # As you can the spectrum is symmetrically except for the very first sample.
     plot(a_freq, title='Spektrum', legend=['real part', 'imaginary part'])
 
-    # TODO
+    # ------- Modify spectrum here -------
     half_spectrum = a_freq[:len(a_freq)//2 + 1]
     half_spectrum[0] = 0
     full_spectrum = complement_half_spectrum(half_spectrum)
-    # TODO
+    # ------------------------------------
 
     # We convert frequencies back to samples (frequency domain -> time domain).
     a_reversed = np.fft.ifft(full_spectrum)
@@ -48,7 +48,7 @@ def test_reverse_frequencies():
     samples = np.fft.ifft(spectrum)
 
     # ... by plotting it.
-    plot(np.array([samples.real, samples.imag]).T, title='Samples (generiert von Spektrum)')
+    plot(samples, title='Samples (generiert von Spektrum)')
 
 
 if __name__ == '__main__':

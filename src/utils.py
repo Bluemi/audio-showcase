@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from pathlib import Path
 from collections.abc import Sized
+from typing import Iterable
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -10,6 +11,10 @@ import audiosegment
 
 
 DEFAULT_SAMPLE_RATE = 44100
+
+
+def clamp(a, mini, maxi):
+    return np.maximum(np.minimum(a, maxi), mini)
 
 
 def set_area(data, percentage, mode, value=0.0):
@@ -55,7 +60,7 @@ def play_audio(song: np.ndarray, volume=1.0, sample_rate=DEFAULT_SAMPLE_RATE, no
     if normalize:
         song = song * (volume / np.max(np.abs(song)))
     song = song.reshape((-1, 1))
-    song = (song * 2**15).astype(np.int16)
+    song = clamp((song * 2**15), -2**15, 2**15-1).astype(np.int16)
     song = audiosegment.from_numpy_array(song, sample_rate)
     song = song.fade_in(100).fade_out(100)
     play(song)
@@ -71,34 +76,43 @@ def load_mono_audio(path: str or Path, length=3) -> np.ndarray:
 
 
 def plot(y, x=None, zoom=None, title=None, legend=None):
-    legend_kw_args1 = {}
-    legend_kw_args2 = {}
-    if legend is not None:
+    if len(y.shape) == 1:
+        y = y.reshape((1, -1))
+    num_plots = len(y)
+
+    # handle complex numbers
+    if y.dtype == complex:
+        assert num_plots == 1
+        y = np.array([y[0].real, y[0].imag])
+        num_plots = 2
+
+    legend_kw_args = []
+    if legend is None:
+        legend_kw_args = [{}] * num_plots
+    else:
         if isinstance(legend, str):
-            legend_kw_args1['label'] = legend
-        elif isinstance(legend, list) or isinstance(legend, tuple):
-            legend_kw_args1['label'] = legend[0]
-            if len(legend) >= 2:
-                legend_kw_args2['label'] = legend[1]
+            if num_plots != 1:
+                raise ValueError(f'got only one legend for {num_plots} plots.')
+            legend_kw_args.append({'label': legend})
+        elif isinstance(legend, tuple) or isinstance(legend, list):
+            if len(legend) != num_plots:
+                raise ValueError(f'got only {len(legend)} legend for {num_plots} plots.')
+            for l in legend:
+                legend_kw_args.append({'label': l})
 
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
     if x is None:
-        x = np.arange(len(y))
+        x = np.arange(len(y[0]))
 
     # only plot subarea of wave
     if zoom:
         size = x.shape[0] // int(zoom)
         x = x[:size]
-        y = y[:size]
+        y = y[:, :size]
 
-    # handle complex numbers
-    if y.dtype == complex:
-        ax.plot(x, y.real, **legend_kw_args1)
-        ax.plot(x, y.imag, **legend_kw_args2)
-    else:
-        # plot
-        ax.plot(x, y, **legend_kw_args1)
+    for data_line, legend_kw in zip(y, legend_kw_args):
+        ax.plot(x, data_line, **legend_kw)
 
     # title
     if title:
