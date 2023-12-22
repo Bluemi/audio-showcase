@@ -13,13 +13,15 @@ def test_instruments():
 
     # Use sine function to create a sine wave with the given frequency.
     # You can use different types of waves here.
-    wave_type = 'sin'
+    wave_type = 'tripple'
     if wave_type == 'sin':
         y = np.sin(x * 2 * np.pi * FREQUENCY)
     elif wave_type == 'sawtooth':
         y = sawtooth(x * 2 * np.pi * FREQUENCY)
     elif wave_type == 'square':
         y = square(x * 2 * np.pi * FREQUENCY)
+    elif wave_type == 'tripple':
+        y = tripple(x * 2 * np.pi * FREQUENCY)
     elif wave_type == 'instrument':
         # You can try different instruments here
         y = piano(x * 2 * np.pi * FREQUENCY)
@@ -45,6 +47,14 @@ def square(x):
     result = np.zeros_like(x)
     # use 1000 iterations of overtones (only use every second overtone, see definition of square wave)
     for i in range(1, 1000, 2):
+        result += 1/i * np.sin(i*x)
+    return result
+
+
+def tripple(x):
+    result = np.zeros_like(x)
+    # use 1000 iterations of overtones (only use every second overtone, see definition of square wave)
+    for i in range(1, 1000, 4):
         result += 1/i * np.sin(i*x)
     return result
 

@@ -2,7 +2,8 @@
 
 case "$1" in
 	f)
-		python src/filter_song.py
+		shift
+		python src/filter_song.py "$@"
 		;;
 	fft)
 		python src/test_fft.py

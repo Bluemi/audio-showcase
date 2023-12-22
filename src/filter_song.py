@@ -4,8 +4,7 @@ from pathlib import Path
 import numpy as np
 import scipy
 
-from utils import load_mono_audio, play_audio, set_area, plot
-
+from utils import load_mono_audio, play_audio, set_area, plot, complement_half_spectrum
 
 PLOT_SPECTRUM = False
 PLOT_FILTER = False
@@ -30,6 +29,7 @@ def test_fft():
     # Convert to frequency domain.
     # Note that frequencies with the fourier transformation are represented as complex numbers.
     spectrum = np.fft.fft(samples)
+    print('number of frequencies in spectrum:', len(spectrum))
     # plot(spectrum, title='Spektrum (vollständig)')
     plot(np.abs(spectrum), title='Spektrum')
 
@@ -39,8 +39,12 @@ def test_fft():
     # Low frequencies are on the left side, in the middle are high frequencies and on the right side the mirrored low
     # frequencies again. If we want to suppress high frequencies we should set frequencies in the middle of the
     # spectrum to zero. To suppress low frequencies we should set the borders of the spectrum to zero.
-    set_area(spectrum, 0.9, mode='mid')
+    # set_area(spectrum, 0.9, mode='mid')
     # set_area(spectrum, 0.04, mode='border')
+
+    half_spectrum = spectrum[:len(spectrum)//2 + 1]
+    half_spectrum[:11025] = 0
+    spectrum = complement_half_spectrum(half_spectrum)
 
     # Plot the spectrum (we only plot the real part of the complex spectrum).
     # You can also try to plot the imaginary part with "freq.imag".
@@ -50,7 +54,7 @@ def test_fft():
     new_samples = np.fft.ifft(spectrum)
 
     # Play the edited audio data.
-    # play_audio(new_samples.real)
+    play_audio(new_samples.real)
 
 
 def test_filter():
@@ -140,5 +144,5 @@ def gaussian_filter(filter_width, sigma=1.0, mean=0.0):
 
 if __name__ == '__main__':
     # print('uncomment one of the two functions at the very end of the code to start testing.')
-    # test_fft()
-    test_filter()
+    test_fft()
+    # test_filter()

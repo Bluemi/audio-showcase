@@ -17,16 +17,16 @@ def test_fft():
     plot(a, title='Samples')
 
     # Convert to frequency domain. If you want you could try the discrete cosine transformation np.fft.dct().
-    # This produces only real numbers (not complex)
+    # The dct produces real numbers (not complex like the fourier transformation)
     a_freq = np.fft.fft(a)
 
-    # Plot the frequencies. Note that we only plot the real part of the complex spectrum.
-    # As you can the spectrum is symmetrically except for the very first sample.
+    # Plot the frequencies. As you can the spectrum is symmetrically except for the very first sample.
     plot(a_freq, title='Spektrum', legend=['real part', 'imaginary part'])
 
     # ------- Modify spectrum here -------
     half_spectrum = a_freq[:len(a_freq)//2 + 1]
-    # half_spectrum[0] = 0
+    half_spectrum[0] = 0
+    half_spectrum[16] = 20
     full_spectrum = complement_half_spectrum(half_spectrum)
     # ------------------------------------
 
