@@ -43,7 +43,7 @@ def test_fft():
     # set_area(spectrum, 0.04, mode='border')
 
     half_spectrum = spectrum[:len(spectrum)//2 + 1]
-    half_spectrum[:11025] = 0
+    half_spectrum[11025//2:] = 0
     spectrum = complement_half_spectrum(half_spectrum)
 
     # Plot the spectrum (we only plot the real part of the complex spectrum).
