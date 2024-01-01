@@ -6,14 +6,14 @@ import pygame as pg
 
 from utils import load_mono_audio, samples_to_u16, seconds_to_samples
 
-WINDOW_SIZE = 256 * 4
+WINDOW_SIZE = 256 * 8
 STRIDE = WINDOW_SIZE // 2
 FADE_MS = 10
 
 
 class Main:
     def __init__(self, samples, spectrogram):
-        self.screen = pg.display.set_mode((1920, 762))
+        self.screen = pg.display.set_mode((0, 0), pg.FULLSCREEN)
         self.spectrogram = spectrogram
         image = np.repeat(self.spectrogram, 3, axis=-1).reshape(*self.spectrogram.shape, 3)
         image = pg.surfarray.make_surface((image * 255).astype(int))
@@ -58,6 +58,10 @@ class Main:
             if event.key == pg.K_0:
                 self.stop_sound()
                 self.current_position = 0
+                self.sound = self.get_current_sound()
+        if event.type == pg.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                self.current_position = event.pos[0] * (STRIDE / 44100)
                 self.sound = self.get_current_sound()
 
     def stop_sound(self):
