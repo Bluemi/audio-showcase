@@ -22,14 +22,16 @@ class Main:
 
         self.running = True
         self.playing = False
-        self.current_position = 0
+        self.follow = True
+        self.current_time = 0
+        self.current_render_position = 0
         self.clock = pg.time.Clock()
 
         self.samples = samples_to_u16(samples)
         self.sound = self.get_current_sound()
 
     def get_current_sound(self):
-        return pg.mixer.Sound(self.samples[seconds_to_samples(self.current_position):])
+        return pg.mixer.Sound(self.samples[seconds_to_samples(self.current_time):])
 
     def run(self):
         last_update = 0
@@ -54,15 +56,27 @@ class Main:
                 if self.playing:
                     self.stop_sound()
                 else:
+                    self.follow = True
                     self.start_sound()
             if event.key == pg.K_0:
+                self.follow = True
                 self.stop_sound()
-                self.current_position = 0
+                self.current_time = 0
                 self.sound = self.get_current_sound()
+            if event.key == pg.K_l:
+                self.follow = False
+                self.current_render_position += 200
+            if event.key == pg.K_h:
+                self.follow = False
+                self.current_render_position -= 200
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 1:
-                self.current_position = event.pos[0] * (STRIDE / 44100)
-                self.sound = self.get_current_sound()
+                self.current_time = self.pos_to_sec(event.pos[0])
+                if self.playing:
+                    self.stop_sound()
+                    self.start_sound()
+                else:
+                    self.sound = self.get_current_sound()
 
     def stop_sound(self):
         self.playing = False
@@ -75,16 +89,27 @@ class Main:
 
     def tick(self, last_update):
         if self.playing:
-            self.current_position += last_update / 1000
+            self.current_time += last_update / 1000
+        if self.follow:
+            while self.sec_to_pos(self.current_time) > self.screen.get_width():
+                self.current_render_position += 400
+            while self.sec_to_pos(self.current_time) < 0:
+                self.current_render_position -= 400
 
     def render(self):
         self.screen.fill((0, 0, 0))
 
-        self.screen.blit(self.spec_image, (0, 0))
+        self.screen.blit(self.spec_image, (-self.current_render_position, 0))
 
-        render_pos = int(self.current_position * (44100 / STRIDE))
+        render_pos = self.sec_to_pos(self.current_time)
         pg.draw.line(self.screen, (80, 120, 200), (render_pos, 0), (render_pos, self.screen.get_height()))
         pg.display.flip()
+
+    def sec_to_pos(self, sec):
+        return int(sec * (44100 / STRIDE)) - self.current_render_position
+
+    def pos_to_sec(self, pos):
+        return (pos + self.current_render_position) * (STRIDE / 44100)
 
 
 def calc_spectrogram(samples):
