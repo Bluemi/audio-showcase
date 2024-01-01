@@ -157,3 +157,8 @@ def complement_half_spectrum(half_spectrum):
     imag_part = half_spectrum.imag
     second_part = real_part[len(real_part)-2:0:-1] - imag_part[len(imag_part)-2:0:-1] * 1j
     return np.concatenate([half_spectrum, second_part])
+
+
+def show_image(image, **kwargs):
+    plt.imshow(image, **kwargs)
+    plt.show()

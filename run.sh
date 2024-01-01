@@ -18,6 +18,10 @@ case "$1" in
 		shift
 		python src/main.py "$@"
 		;;
+	s)
+		shift
+		python src/scalogram.py "$@"
+		;;
 	*)
 		echo "unknown option"
 		;;
