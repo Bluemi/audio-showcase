@@ -54,12 +54,16 @@ def set_area(data, percentage, mode, value=0.0):
         raise ValueError('unknown mode: {}'.format(mode))
 
 
-def play_audio(song: np.ndarray, volume=1.0, sample_rate=DEFAULT_SAMPLE_RATE, normalize=True):
-    song = song - np.mean(song)
+def samples_to_u16(samples, volume=1.0, normalize=True):
+    song = samples - np.mean(samples)
     if normalize:
         song = song * (volume / np.max(np.abs(song)))
     song = song.reshape((-1, 1))
-    song = clamp((song * 2**15), -2**15, 2**15-1).astype(np.int16)
+    return clamp((song * 2**15), -2**15, 2**15-1).astype(np.int16)
+
+
+def play_audio(song: np.ndarray, volume=1.0, sample_rate=DEFAULT_SAMPLE_RATE, normalize=True):
+    song = samples_to_u16(song, volume=volume, normalize=normalize)
     song = audiosegment.from_numpy_array(song, sample_rate)
     song = song.fade_in(100).fade_out(100)
     play(song)
@@ -67,7 +71,8 @@ def play_audio(song: np.ndarray, volume=1.0, sample_rate=DEFAULT_SAMPLE_RATE, no
 
 def load_mono_audio(path: str or Path, length=3) -> np.ndarray:
     song = pydub.AudioSegment.from_wav(path)
-    song = song[:1000*length]
+    if length > 0:
+        song = song[:1000*length]
     song = song.split_to_mono()[0]
     data = np.array(song.get_array_of_samples())
 

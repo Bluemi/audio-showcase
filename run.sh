@@ -22,6 +22,10 @@ case "$1" in
 		shift
 		python src/scalogram.py "$@"
 		;;
+	is)
+		shift
+		python src/interactive-spectogram.py "$@"
+		;;
 	*)
 		echo "unknown option"
 		;;

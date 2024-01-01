@@ -4,4 +4,4 @@ pydub
 scipy
 audiosegment
 librosa
-
+pygame
