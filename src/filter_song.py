@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 import scipy
 
-from utils import load_mono_audio, play_audio, set_area, plot, complement_half_spectrum
+from utils import load_mono_audio, play_audio, plot, complement_half_spectrum
 
 PLOT_SPECTRUM = False
 PLOT_FILTER = False
@@ -43,7 +43,7 @@ def test_fft():
     # set_area(spectrum, 0.04, mode='border')
 
     half_spectrum = spectrum[:len(spectrum)//2 + 1]
-    half_spectrum[11025//2:] = 0
+    half_spectrum[:11025//2] = 0
     spectrum = complement_half_spectrum(half_spectrum)
 
     # Plot the spectrum (we only plot the real part of the complex spectrum).
@@ -72,7 +72,7 @@ def test_filter():
     filter_width = 121
 
     # You can choose between some different filters
-    filter_type = 'identity'
+    filter_type = 'gaussian'
 
     if filter_type == 'identity':
         audio_filter = np.zeros(filter_width)
@@ -144,5 +144,5 @@ def gaussian_filter(filter_width, sigma=1.0, mean=0.0):
 
 if __name__ == '__main__':
     # print('uncomment one of the two functions at the very end of the code to start testing.')
-    test_fft()
-    # test_filter()
+    # test_fft()
+    test_filter()
