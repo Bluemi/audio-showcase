@@ -6,7 +6,7 @@ import pygame as pg
 
 from utils import load_mono_audio, samples_to_u16, seconds_to_samples
 
-WINDOW_SIZE = 256 * 8
+WINDOW_SIZE = 256 * 4
 STRIDE = WINDOW_SIZE // 2
 FADE_MS = 10
 
