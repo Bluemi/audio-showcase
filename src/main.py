@@ -17,7 +17,7 @@ def test_song():
     if len(sys.argv) >= 2:
         path_to_song = sys.argv[1]
 
-    samples = load_mono_audio(path_to_song, length=5)
+    samples = load_mono_audio(path_to_song, length=10)
 
     new_samples = reverb(samples, length=2.0, wet_gain=2.2, dry_gain=1.0)
     # new_samples = delay(samples, length=0.25, strength=[0.5, 0.2, 0.1, 0.05])
@@ -25,6 +25,7 @@ def test_song():
     # new_samples = distort(samples, clip_level=0.01)
     # new_samples = tremolo(samples, min_amp=0.2, max_amp=1, duration=0.15)
     # new_samples = fdn_reverb(samples, gain_wet=2.2, gain_dry=1.0)
+    # new_samples = stretch_audio(samples, value=2.4)
 
     # plot
     if np.mean(np.abs(samples)) < np.mean(np.abs(new_samples)):
@@ -35,7 +36,7 @@ def test_song():
         legend = ['Original', 'Effekt']
     plot(plot_data, legend=legend)
 
-    play_audio(samples)
+    # play_audio(samples)
     play_audio(new_samples, normalize=True)
 
 
