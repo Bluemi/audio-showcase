@@ -49,7 +49,7 @@ def flanger(samples, min_delay=0.0, max_delay=0.001, duration=1):
 
     delay_samples = delay_samples[:len(samples)]
 
-    plot(delay_samples)
+    # plot(delay_samples)
 
     indices = np.arange(len(samples)) + delay_samples
     indices = np.minimum(indices, len(samples)-1)

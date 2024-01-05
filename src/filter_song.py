@@ -3,11 +3,12 @@ from pathlib import Path
 
 import numpy as np
 import scipy
+from scipy.signal import firwin, kaiser_atten, kaiser_beta
 
 from utils import load_mono_audio, play_audio, plot, complement_half_spectrum
 
-PLOT_SPECTRUM = False
-PLOT_FILTER = False
+PLOT_SPECTRUM = True
+PLOT_FILTER = True
 
 
 def test_fft():
@@ -72,7 +73,7 @@ def test_filter():
     filter_width = 121
 
     # You can choose between some different filters
-    filter_type = 'gaussian'
+    filter_type = 'kaiser'
 
     if filter_type == 'identity':
         audio_filter = np.zeros(filter_width)
@@ -98,6 +99,18 @@ def test_filter():
     elif filter_type == 'spectrum':
         filter_spectrum = np.linspace(1, 0, filter_width) ** 2
         audio_filter = scipy.fft.idct(filter_spectrum)
+    elif filter_type == 'firwin':
+        ntaps = 128
+        low_freq = 0.7
+        high_freq = 4.0
+        fs = 63.0
+        audio_filter = bandpass_firwin(ntaps, low_freq, high_freq, fs)
+    elif filter_type == 'kaiser':
+        ntaps = 128
+        low_freq = 0.3
+        high_freq = 6.0
+        fs = 63.0
+        audio_filter = bandpass_kaiser(ntaps, low_freq, high_freq, fs=fs, width=2.6)
     else:
         raise ValueError('Unknown filter type: {}'.format(filter_type))
 
@@ -140,6 +153,20 @@ def gaussian_filter(filter_width, sigma=1.0, mean=0.0):
     gauss_filter = gauss_curve(gauss_filter, sigma, mean)
     # normalize by dividing the sum
     return gauss_filter / np.sum(gauss_filter)
+
+
+# taken from https://stackoverflow.com/questions/16301569/bandpass-filter-in-python
+def bandpass_firwin(ntaps, lowcut, highcut, fs, window='hamming'):
+    # noinspection PyTypeChecker
+    return firwin(ntaps, [lowcut, highcut], fs=fs, pass_zero=False, window=window, scale=False)
+
+
+def bandpass_kaiser(ntaps, lowcut, highcut, fs, width):
+    atten = kaiser_atten(ntaps, width/(0.5*fs))
+    beta = kaiser_beta(atten)
+    # noinspection PyTypeChecker
+    taps = firwin(ntaps, [lowcut, highcut], fs=fs, pass_zero=False, window=('kaiser', beta), scale=False)
+    return taps
 
 
 if __name__ == '__main__':
