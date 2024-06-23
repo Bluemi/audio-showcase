@@ -25,7 +25,7 @@ def test_fft():
     plot(samples, title='Samples')
 
     # Play original song
-    # play_audio(samples)
+    play_audio(samples)
 
     # Convert to frequency domain.
     # Note that frequencies with the fourier transformation are represented as complex numbers.
@@ -43,13 +43,13 @@ def test_fft():
     # set_area(spectrum, 0.9, mode='mid')
     # set_area(spectrum, 0.04, mode='border')
 
-    half_spectrum = spectrum[:len(spectrum)//2 + 1]
-    half_spectrum[:11025//2] = 0
-    spectrum = complement_half_spectrum(half_spectrum)
+    # half_spectrum = spectrum[:len(spectrum)//2 + 1]
+    # half_spectrum[:11025//2] = 0
+    # spectrum = complement_half_spectrum(half_spectrum)
 
     # Plot the spectrum (we only plot the real part of the complex spectrum).
     # You can also try to plot the imaginary part with "freq.imag".
-    plot(np.abs(spectrum), title='Spektrum (nach Bearbeitung)')
+    # plot(np.abs(spectrum), title='Spektrum (nach Bearbeitung)')
 
     # Convert frequencies back to sample data in time domain.
     new_samples = np.fft.ifft(spectrum)
@@ -66,14 +66,14 @@ def test_filter():
     samples = load_mono_audio(path_to_song, length=5)  # load 5 seconds
 
     # Play original
-    # play_audio(samples)
+    play_audio(samples)
 
     # Defines the number of samples in the filter. Changing the filter_width should change how the filter works.
     # An odd number of filter samples is recommended, so we have some central element
     filter_width = 121
 
     # You can choose between some different filters
-    filter_type = 'kaiser'
+    filter_type = 'gaussian'
 
     if filter_type == 'identity':
         audio_filter = np.zeros(filter_width)
@@ -121,8 +121,8 @@ def test_filter():
         filter_spectrum = np.fft.fft(audio_filter)
 
         # only use the first half of the spectrum as it is mirrored
-        filter_spectrum = np.abs(filter_spectrum[:len(filter_spectrum)//2+1])
-        plot(np.abs(filter_spectrum), title='Filter Spektrum')
+        # filter_spectrum = np.abs(filter_spectrum[:len(filter_spectrum)//2+1])
+        # plot(np.abs(filter_spectrum), title='Filter Spektrum')
 
     # apply filter to audio
     convolved_samples = np.convolve(samples, audio_filter, mode='same')
@@ -138,7 +138,6 @@ def test_filter():
             np.abs(convolved_spectrum)[:len(convolved_spectrum)//2+1]
         ])
         plot(specs, zoom=4, title='Song Spektrum', legend=['Original', 'Gefiltert'])
-
 
 
 def gauss_curve(x, sigma=1.0, mean=0.0):

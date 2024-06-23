@@ -24,17 +24,17 @@ def test_fft():
     plot(a_freq, title='Spektrum', legend=['real part', 'imaginary part'])
 
     # ------- Modify spectrum here -------
-    half_spectrum = a_freq[:len(a_freq)//2 + 1]
-    half_spectrum[0] = 0
-    half_spectrum[16] = 20
-    full_spectrum = complement_half_spectrum(half_spectrum)
+    # half_spectrum = a_freq[:len(a_freq)//2 + 1]
+    # half_spectrum[0] = 0
+    # half_spectrum[16] = 20
+    # full_spectrum = complement_half_spectrum(half_spectrum)
     # ------------------------------------
 
     # We convert frequencies back to samples (frequency domain -> time domain).
-    a_reversed = np.fft.ifft(full_spectrum)
+    # a_reversed = np.fft.ifft(full_spectrum)
 
     # The real part of the reversed samples should look like original samples
-    plot(a + a_reversed.real * 1j, title='Samples', legend=['Original', 'From Spectrum'])
+    # plot(a + a_reversed.real * 1j, title='Samples', legend=['Original', 'From Spectrum'])
 
 
 def test_reverse_frequencies():
