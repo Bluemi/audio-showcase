@@ -66,14 +66,14 @@ def test_filter():
     samples = load_mono_audio(path_to_song, length=5)  # load 5 seconds
 
     # Play original
-    play_audio(samples)
+    # play_audio(samples)
 
     # Defines the number of samples in the filter. Changing the filter_width should change how the filter works.
     # An odd number of filter samples is recommended, so we have some central element
     filter_width = 121
 
     # You can choose between some different filters
-    filter_type = 'gaussian'
+    filter_type = 'random'
 
     if filter_type == 'identity':
         audio_filter = np.zeros(filter_width)

@@ -34,13 +34,12 @@ def delay(samples, length=1, strength=0.5):
     return new_samples
 
 
-
 def flanger(samples, min_delay=0.0, max_delay=0.001, duration=1):
     delay_one_cycle = np.linspace(
         seconds_to_samples(min_delay),
         seconds_to_samples(max_delay),
         seconds_to_samples(duration/2)
-    ).astype(int )
+    ).astype(int)
     delay_one_cycle = np.concatenate([delay_one_cycle, delay_one_cycle[::-1]])
 
     delay_samples = delay_one_cycle
@@ -49,7 +48,7 @@ def flanger(samples, min_delay=0.0, max_delay=0.001, duration=1):
 
     delay_samples = delay_samples[:len(samples)]
 
-    # plot(delay_samples)
+    plot(delay_samples)
 
     indices = np.arange(len(samples)) + delay_samples
     indices = np.minimum(indices, len(samples)-1)

@@ -144,8 +144,8 @@ def plot(y, x=None, zoom=None, title=None, legend=None, plot_style='line'):
     plt.show()
 
 
-def seconds_to_samples(milliseconds, sample_rate=44100):
-    return int(sample_rate * milliseconds)
+def seconds_to_samples(seconds, sample_rate=44100):
+    return int(sample_rate * seconds)
 
 
 def pad_to_length(samples, length):
