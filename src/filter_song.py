@@ -121,8 +121,8 @@ def test_filter():
         filter_spectrum = np.fft.fft(audio_filter)
 
         # only use the first half of the spectrum as it is mirrored
-        # filter_spectrum = np.abs(filter_spectrum[:len(filter_spectrum)//2+1])
-        # plot(np.abs(filter_spectrum), title='Filter Spektrum')
+        filter_spectrum = np.abs(filter_spectrum[:len(filter_spectrum)//2+1])
+        plot(np.abs(filter_spectrum), title='Filter Spektrum')
 
     # apply filter to audio
     convolved_samples = np.convolve(samples, audio_filter, mode='same')
