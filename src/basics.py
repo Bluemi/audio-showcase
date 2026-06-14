@@ -17,8 +17,10 @@ def main():
     samples = np.sin(x * FREQUENCY * 2 * np.pi)
 
     # samples = np.sign(samples)
+    # samples = np.mod(x * FREQUENCY, 1)
 
-    plot(samples, x, zoom=LENGTH * RENDER_ZOOM)
+    # plot(samples, x, zoom=LENGTH * RENDER_ZOOM)
+    plot(samples, x)
 
     play_audio(samples)
 
