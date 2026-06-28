@@ -1,7 +1,10 @@
+import sys
+from pathlib import Path
+
 import numpy as np
 import scipy.signal
 
-from utils import pad_to_length, complement_half_spectrum, load_mono_audio, seconds_to_samples, plot
+from utils import pad_to_length, complement_half_spectrum, load_mono_audio, seconds_to_samples, plot, play_audio
 
 REVERB_IMPULSE = None
 
@@ -9,7 +12,7 @@ REVERB_IMPULSE = None
 def reverb(samples, length=1, dry_gain=1, wet_gain=1):
     global REVERB_IMPULSE
     if REVERB_IMPULSE is None:
-        REVERB_IMPULSE = load_mono_audio('audio/BalloonPop.wav')
+        REVERB_IMPULSE = load_mono_audio('audio/HandClap1.wav')
 
     reverb_impulse = stretch_audio(REVERB_IMPULSE, length)
     new_samples = scipy.signal.fftconvolve(samples, reverb_impulse)
@@ -74,15 +77,16 @@ def tremolo(samples, min_amp=0.8, max_amp=1.0, duration=0.2):
 
 
 def distort(samples, clip_level=0.9):
-    samples = np.minimum(samples, clip_level)
-    samples = np.maximum(samples, -clip_level)
-    return samples
+    return np.clip(samples, -clip_level, clip_level)
+
+
+def distort2(samples, clip_level=0.9):
+    return np.tanh(samples / clip_level) * clip_level
 
 
 def stretch_audio(samples, value):
     num_new_indices = int(len(samples) * value)
-    indices = np.arange(num_new_indices)
-    new_indices = np.round(indices / value).astype(int)
+    new_indices = np.linspace(0, len(samples), num_new_indices, endpoint=False).astype(int)
     new_indices = new_indices[new_indices < len(samples)]
     return samples[new_indices]
 
@@ -144,3 +148,39 @@ def pitch(samples, value):
     new_spectrum = np.concatenate([np.zeros(int(value*1000)), spectrum])
     new_samples = np.fft.ifft(new_spectrum)
     return new_samples
+
+
+def main():
+    path_to_song = Path('audio/Song2.wav')
+    if len(sys.argv) >= 2:
+        path_to_song = sys.argv[1]
+
+    samples = load_mono_audio(path_to_song, length=10)
+
+    # play_audio(samples)
+
+    new_samples = samples
+    # new_samples = delay(samples, length=0.25, strength=[0.5, 0.2, 0.1, 0.05])
+    # new_samples = reverb(samples, length=3.0, wet_gain=1.0, dry_gain=0.0)
+    # new_samples = flanger(samples, min_delay=0.0008, max_delay=0.001, duration=4.0)
+    # new_samples = flanger(samples, min_delay=0.0008 * 2, max_delay=0.001 * 2, duration=0.2)
+    # new_samples = distort(samples, clip_level=0.1)
+    # new_samples = distort2(samples, clip_level=0.3)
+    # new_samples = tremolo(samples, min_amp=0.4, max_amp=1, duration=0.15)
+    # new_samples = stretch_audio(samples, value=0.5)
+
+    # plot
+    if np.mean(np.abs(samples)) < np.mean(np.abs(new_samples)):
+        plot_data = np.array([pad_to_length(new_samples, len(samples)), samples])
+        legend = ['Effekt', 'Original']
+    else:
+        plot_data = np.array([samples, pad_to_length(new_samples, len(samples))])
+        legend = ['Original', 'Effekt']
+    plot(plot_data, legend=legend)
+
+    # play_audio(samples)
+    play_audio(new_samples, normalize=True)
+
+
+if __name__ == '__main__':
+    main()

@@ -1,6 +1,10 @@
 #!/bin/bash
 
 case "$1" in
+	e)
+		shift
+		python src/audio_effects.py "$@"
+		;;
 	f)
 		shift
 		python src/filter_song.py "$@"
